@@ -14,6 +14,7 @@ export class BugFormComponent implements OnInit {
   name: string = "";
   website: string = "";
   email: string = "";
+  disabled: boolean = true;
   url: string = "";
   title: string = "";
   severity: string = "";
@@ -29,7 +30,7 @@ export class BugFormComponent implements OnInit {
   severityAssistance: string = "Mention the severity with 1 as critical to 4 as low";
   descriptionAssistance: string = "Mention the description here. Be as detailed as possible."
   //1 - Critical | 2 - High | 3 - Medium | 4 - Low
-
+  attachmentURLS = new Array<string>();
   src: string = ""
   @ViewChild('inputFiles', { static: true }) inputFilesEle!: ElementRef;
 
@@ -106,6 +107,34 @@ export class BugFormComponent implements OnInit {
 
 
 
+
+  onFileSelected(event: Event) {
+    var self = this;
+
+    const files = Array.from((<HTMLInputElement>event.target).files!);
+
+    console.log(files)
+    if (files!.length > 0) {
+      files!.forEach(file => {
+        var reader = new FileReader();
+        reader.onloadend = function () {
+          const formData = new FormData();
+          formData.append('body', file);
+          const upload$ = self.http.post<any>(`https://dev.azure.com/saasberry/SaaSberry%20Innovation%20Lab/_apis/wit/attachments?api-version=6.0&fileName=${file.name}`, formData,
+            {
+              headers: {
+                "Authorization": "Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=",
+                'Content-Type': 'application/octet-stream',
+              }
+            }).subscribe((res) => {self.attachmentURLS.push(res.url);
+            self.disabled = false; debugger});
+
+        }
+        reader.readAsDataURL(file);
+      })
+    }
+    console.log(self.attachmentURLS)
+
   onFileSelected() {
 
   }
@@ -167,6 +196,11 @@ export class BugFormComponent implements OnInit {
 
   handleSubmit() {
 
+
+
+
+  handleSubmit() {
+
     var self = this;
     console.log(this.inputFilesEle.nativeElement.files)
     const files: Array<File> = Array.from(this.inputFilesEle.nativeElement.files);
@@ -191,6 +225,7 @@ export class BugFormComponent implements OnInit {
       })
     }
     this.onFileSelected();
+
     const finalDesc = `<head><link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
@@ -213,6 +248,26 @@ export class BugFormComponent implements OnInit {
       'Authorization': `Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=`,
       'Content-Type': 'application/json-patch+json',
     };
+
+    const attBody :Array<any> = [];
+    this.attachmentURLS!.forEach(val => {
+      attBody.push(
+        {
+
+          "op": "add",
+          "path": "/relations/-",
+          "value": {
+            "rel": "AttachedFile",
+            "url": val,
+            "attributes": {
+              "comment": "Attachment added from Azure automation"
+            }
+          }
+        }
+      )
+    })
+
+
 
     const body = [
       {
@@ -244,6 +299,30 @@ export class BugFormComponent implements OnInit {
         'path': '/fields/System.Tags',
         'from': null,
         'value': `Intake, Traige`
+
+      },
+      ...attBody
+    ];
+
+    const request2 = this.http.post<any>(`https://dev.azure.com/${organization}/${project}/_apis/wit/workitems/$Bug?api-version=6.0`, body, { headers }).subscribe(val => {
+      console.log(val);
+    });
+
+
+    //Making sure the title, description, email, name, and company are filled and not empty
+    this.name = "";
+    this.website = "";
+    this.email = "";
+    this.url = "";
+    this.title = "";
+    this.severity = "";
+    this.description = "";
+  }
+  ngOnInit(): void {
+  }
+
+}
+
       }
     ];
 
@@ -269,6 +348,6 @@ export class BugFormComponent implements OnInit {
   ngOnInit(): void {
   }
 
-}
 
+}
 

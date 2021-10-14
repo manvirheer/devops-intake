@@ -124,6 +124,12 @@
                     <div
                         class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                         <div class="space-y-1 text-center">
+                            <div class="flex text-sm text-gray-600">
+                                <label for="file-upload"
+                                    class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                                    <span>Upload a file</span>
+                                    <input (change)="onFileSelected($event)" #inputFiles id="file-upload" name="file-upload"
+
                             <label for="file-upload"
                                     class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                                     Upload multiple files
@@ -131,7 +137,8 @@
                             <div class="flex text-sm text-gray-600">
                                 <label for="file-upload"
                                     class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                    <input  #inputFiles id="file-upload" name="file-upload"
+                                    <input  id="file-upload" name="file-upload"
+
                                         type="file" class="" multiple>
                                 </label>
                            
@@ -145,7 +152,7 @@
                 </div>
             </div>
             <div class="px-4 bg-gray-50 text-right sm:px-6 mt-4">
-                <button type="submit" (click)="handleSubmit()"
+                <button type="submit" (click)="handleSubmit()" [disabled]=disabled
                     class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Submit
                 </button>
