@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { forkJoin } from 'rxjs';
 import { AppComponent } from './app.component';
 import { PanelComponent } from './panel/panel.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -24,7 +25,8 @@ import { FeatureFormComponent } from './feature-form/feature-form.component';
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+  
   ],
   providers: [],
   bootstrap: [AppComponent]
