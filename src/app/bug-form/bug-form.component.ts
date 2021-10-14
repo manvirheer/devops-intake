@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-bug-form',
@@ -13,6 +14,7 @@ export class BugFormComponent implements OnInit {
   name: string = "";
   website: string = "";
   email: string = "";
+  disabled: boolean = true;
   url: string = "";
   title: string = "";
   severity: string = "";
@@ -28,8 +30,9 @@ export class BugFormComponent implements OnInit {
   severityAssistance: string = "Mention the severity with 1 as critical to 4 as low";
   descriptionAssistance: string = "Mention the description here. Be as detailed as possible."
   //1 - Critical | 2 - High | 3 - Medium | 4 - Low
-
+  attachmentURLS = new Array<string>();
   src: string = ""
+  @ViewChild('inputFiles', { static: true }) inputFilesEle!: ElementRef;
 
   //regex patterns used to match
   urlPattern = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
@@ -101,98 +104,96 @@ export class BugFormComponent implements OnInit {
     }
   }
   fileName = '';
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
 
-    if (file) {
 
-      this.fileName = file.name;
-      var r  = new FileReader();
-      r.readAsBinaryString(file);
-      r.addEventListener('load', event => {
-    
-      });
-      var dataS: string = ''
-      
-      const formData = new FormData();
-      r.onloadend = function(e){
-        var self = this;
-        dataS =  (r.result)!.toString() ;
-        console.log(dataS);
-        console.log('This should be first')
-        formData.append('data',dataS);
-        formData.append("Authorization", "Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=");
-        formData.append('content-type', 'application/octet-stream');
-      
-      console.log('This should be second')
-      console.log(dataS)
-      console.log(formData.getAll('content-type'))
-      const upload$ = self.http.post<any>(`https://dev.azure.com/saasberry/SaaSberry%20Innovation%20Lab/_apis/wit/attachments?api-version=5.0&fileName=${this.fileName}`, formData);
-      
-      upload$.subscribe(data => {
-        console.log('data')
-      });
+
+  onFileSelected(event: Event) {
+    var self = this;
+
+    const files = Array.from((<HTMLInputElement>event.target).files!);
+
+    console.log(files)
+    if (files!.length > 0) {
+      files!.forEach(file => {
+        var reader = new FileReader();
+        reader.onloadend = function () {
+          const formData = new FormData();
+          formData.append('body', file);
+          const upload$ = self.http.post<any>(`https://dev.azure.com/saasberry/SaaSberry%20Innovation%20Lab/_apis/wit/attachments?api-version=6.0&fileName=${file.name}`, formData,
+            {
+              headers: {
+                "Authorization": "Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=",
+                'Content-Type': 'application/octet-stream',
+              }
+            }).subscribe((res) => {self.attachmentURLS.push(res.url);
+            self.disabled = false; debugger});
+
+        }
+        reader.readAsDataURL(file);
+      })
     }
-    }
+    console.log(self.attachmentURLS)
   }
 
-    onChangeSeverity(event: Event) {
-      this.severity = (<HTMLInputElement>event.target).value;
+
+
+  onChangeSeverity(event: Event) {
+    this.severity = (<HTMLInputElement>event.target).value;
+  }
+
+  haveName(): boolean {
+    if (!this.name) {
+      //doesn't detect change
+      this.nameAssistance = "Name is required";
+
+      return false;
     }
+    return true;
+  }
 
-    haveName(): boolean {
-      if (!this.name) {
-        //doesn't detect change
-        this.nameAssistance = "Name is required";
-
-        return false;
-      }
-      return true;
+  haveWebsite() {
+    if (!this.website) {
+      this.websiteAssistance = "Website is required";
+      return false;
     }
+    return true;
+  }
 
-    haveWebsite() {
-      if (!this.website) {
-        this.websiteAssistance = "Website is required";
-        return false;
-      }
-      return true;
+  haveEmail() {
+    if (!this.email) {
+      this.emailAssistance = "Email is required";
+      return false;
     }
+    return true;
+  }
 
-    haveEmail() {
-      if (!this.email) {
-        this.emailAssistance = "Email is required";
-        return false;
-      }
-      return true;
+  haveTitle() {
+    if (!this.title) {
+      this.titleAssistance = "Title is required";
+      console.log(this.titleAssistance)
+      return false;
     }
+    return true;
+  }
 
-    haveTitle() {
-      if (!this.title) {
-        this.titleAssistance = "Title is required";
-        console.log(this.titleAssistance)
-        return false;
-      }
-      return true;
+  haveDescription() {
+    if (!this.description) {
+      this.descriptionAssistance = "Description is required";
+      return false;
     }
+    return true;
+  }
 
-    haveDescription() {
-      if (!this.description) {
-        this.descriptionAssistance = "Description is required";
-        return false;
-      }
-      return true;
-    }
+  checkRequiredFields(): boolean {
+    if (!this.haveName() || !this.haveDescription() || !this.haveWebsite() || !this.haveTitle())
+      return false;
+    return true;
+  }
+
+  handleSubmit() {
 
 
-    checkRequiredFields(): boolean {
-      if (!this.haveName() || !this.haveDescription() || !this.haveWebsite() || !this.haveTitle())
-        return false;
-      return true;
-    }
-
-    handleSubmit() {
-      
-      const finalDesc = `<head><link rel="preconnect" href="https://fonts.googleapis.com">
+    const finalDesc = `<head><link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
       <style>
@@ -202,62 +203,86 @@ export class BugFormComponent implements OnInit {
       </style>
       <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
       </head>
-      
+
 <div class="open text-lg bg-gray-100 border-2 rounded-sm" style="font-size: 1.2em">
 <code>Following bug was reported by ${this.name}. Company - ${this.website} and Email - ${this.email}</code>
 </div>
 <br /> ${this.description}`;
 
-      const organization = 'saasberry';
-      const project = 'SaaSberry%20Innovation%20Lab'
-      const headers = {
-        'Authorization': `Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=`,
-        'Content-Type': 'application/json-patch+json',
-      };
-
-      const body = [
+    const organization = 'saasberry';
+    const project = 'SaaSberry%20Innovation%20Lab'
+    const headers = {
+      'Authorization': `Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=`,
+      'Content-Type': 'application/json-patch+json',
+    };
+    const attBody :Array<any> = [];
+    this.attachmentURLS!.forEach(val => {
+      attBody.push(
         {
+
           "op": "add",
-          "path": "/fields/System.Title",
-          "value": `Bug - ${this.title}`
-        },
-        {
-          'op': 'add',
-          'path': '/fields/System.Description',
-          'from': null,
-          'data-type': 'HTML',
-          'value': finalDesc
-        },
-        {
-          'op': 'add',
-          'path': '/fields/System.History',
-          'from': null,
-          'value': 'Test Comment'
-        },
-        {
-          'op': 'add',
-          'path': '/fields/Microsoft.VSTS.Common.Severity',
-          'from': null,
-          'value': `${this.severity}`
-        },
-        {
-          'op': 'add',
-          'path': '/fields/System.Tags',
-          'from': null,
-          'value': `Intake, Traige`
+          "path": "/relations/-",
+          "value": {
+            "rel": "AttachedFile",
+            "url": val,
+            "attributes": {
+              "comment": "Attachment added from Azure automation"
+            }
+          }
         }
-      ];
+      )
+    })
+    const body = [
+      {
+        "op": "add",
+        "path": "/fields/System.Title",
+        "value": `Bug - ${this.title}`
+      },
+      {
+        'op': 'add',
+        'path': '/fields/System.Description',
+        'from': null,
+        'data-type': 'HTML',
+        'value': finalDesc
+      },
+      {
+        'op': 'add',
+        'path': '/fields/System.History',
+        'from': null,
+        'value': 'Test Comment'
+      },
+      {
+        'op': 'add',
+        'path': '/fields/Microsoft.VSTS.Common.Severity',
+        'from': null,
+        'value': `${this.severity}`
+      },
+      {
+        'op': 'add',
+        'path': '/fields/System.Tags',
+        'from': null,
+        'value': `Intake, Traige`
+      },
+      ...attBody
+    ];
 
-      this.http.post<any>(`https://dev.azure.com/${organization}/${project}/_apis/wit/workitems/$Bug?api-version=6.0`, body, { headers }).subscribe(data => {
-
-      })
-
-
-      //Making sure the title, description, email, name, and company are filled and not empty
+    const request2 = this.http.post<any>(`https://dev.azure.com/${organization}/${project}/_apis/wit/workitems/$Bug?api-version=6.0`, body, { headers }).subscribe(val => {
+      console.log(val);
+    });
 
 
-    }
-    ngOnInit(): void {
-    }
-
+    //Making sure the title, description, email, name, and company are filled and not empty
+    this.name = "";
+    this.website = "";
+    this.email = "";
+    this.url = "";
+    this.title = "";
+    this.severity = "";
+    this.description = "";
   }
+  ngOnInit(): void {
+  }
+
+}
+
+
