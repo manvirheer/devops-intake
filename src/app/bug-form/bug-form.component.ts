@@ -107,7 +107,6 @@ export class BugFormComponent implements OnInit {
 
 
 
-
   onFileSelected(event: Event) {
     var self = this;
 
@@ -134,9 +133,6 @@ export class BugFormComponent implements OnInit {
       })
     }
     console.log(self.attachmentURLS)
-
-  onFileSelected() {
-
   }
 
 
@@ -197,35 +193,6 @@ export class BugFormComponent implements OnInit {
   handleSubmit() {
 
 
-
-
-  handleSubmit() {
-
-    var self = this;
-    console.log(this.inputFilesEle.nativeElement.files)
-    const files: Array<File> = Array.from(this.inputFilesEle.nativeElement.files);
-    var requestArray = [];
-    console.log(files)
-    if (files.length > 1) {
-      files.forEach(file => {
-        var reader = new FileReader();
-        reader.onloadend = function () {
-          const formData = new FormData();
-          formData.append('body', file);
-          const upload$ = self.http.post<any>(`https://dev.azure.com/saasberry/SaaSberry%20Innovation%20Lab/_apis/wit/attachments?api-version=6.0&fileName=testFile`, formData,
-            {
-              headers: {
-                "Authorization": "Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=",
-                'Content-Type': 'application/octet-stream',
-              }
-            });
-          requestArray.push(upload$)
-        }
-        reader.readAsDataURL(file);
-      })
-    }
-    this.onFileSelected();
-
     const finalDesc = `<head><link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
@@ -248,7 +215,6 @@ export class BugFormComponent implements OnInit {
       'Authorization': `Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=`,
       'Content-Type': 'application/json-patch+json',
     };
-
     const attBody :Array<any> = [];
     this.attachmentURLS!.forEach(val => {
       attBody.push(
@@ -266,9 +232,6 @@ export class BugFormComponent implements OnInit {
         }
       )
     })
-
-
-
     const body = [
       {
         "op": "add",
@@ -299,7 +262,6 @@ export class BugFormComponent implements OnInit {
         'path': '/fields/System.Tags',
         'from': null,
         'value': `Intake, Traige`
-
       },
       ...attBody
     ];
@@ -323,31 +285,4 @@ export class BugFormComponent implements OnInit {
 
 }
 
-      }
-    ];
-
-    const request2 = this.http.post<any>(`https://dev.azure.com/${organization}/${project}/_apis/wit/workitems/$Bug?api-version=6.0`, body, { headers });
-    requestArray.push(request2);
-    console.log(requestArray)
-    var responseArray : Array<[]> ;
-    responseArray = new Array(requestArray.length);
-    
-    console.log(requestArray.length)
-    forkJoin(requestArray).subscribe(val => console.log(val)
-    );
-
-    //Making sure the title, description, email, name, and company are filled and not empty
-    this.name = "";
-    this.website = "";
-    this.email = "";
-    this.url = "";
-    this.title = "";
-    this.severity = "";
-    this.description = "";
-  }
-  ngOnInit(): void {
-  }
-
-
-}
 
