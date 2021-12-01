@@ -1,0 +1,19 @@
+<div class="col-span-1 m-4 w-full">
+    <div class=" px-4 p-2 sm:px-0">
+        <h3 class="text-5xl font-medium leading-9 font-customPro text-gray-900 tracking-wide ">Enter the work item number</h3>
+        
+        <p class="mt-4 mr-4 text-md leading-6 text-gray-600">
+            Work item number is the ticket number which was generated when you submitted the bug or an enhancement. Once you have entered the number, click on the submit button which will display the comments related to the work item.
+        </p>
+        <div>
+            <form class="w-full max-w-sm">
+                <div class="flex items-center border-b border-indigo-500 py-2 mt-3">
+                  <input class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text" placeholder="123.." aria-label="Full name" #workItemInput>
+                  <button (click) = "OnSearchClicked($event)" class="flex-shrink-0 bg-indigo-500 hover:bg-teal-700 border-indigo-200 hover:border-teal-700 text-md border-2 text-white py-1 px-4 rounded-lg" type="button">
+                   Search
+                  </button>
+                </div>
+              </form>
+        </div>
+    </div>
+</div>

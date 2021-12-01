@@ -115,6 +115,10 @@ export class BugFormComponent implements OnInit {
     console.log(files)
     if (files!.length > 0) {
       files!.forEach(file => {
+        console.log(file)
+        var fileNameExt  = "hehe";
+        
+        fileNameExt = file?.name?.match(/\.[0-9a-z]+$/i)[0]
         var reader = new FileReader();
         reader.onloadend = function () {
           const formData = new FormData();
@@ -127,7 +131,6 @@ export class BugFormComponent implements OnInit {
               }
             }).subscribe((res) => {self.attachmentURLS.push(res.url);
             self.disabled = false; debugger});
-
         }
         reader.readAsDataURL(file);
       })
@@ -191,8 +194,8 @@ export class BugFormComponent implements OnInit {
   }
 
   handleSubmit() {
-
-
+console.log("Submit action taken.")
+debugger; 
     const finalDesc = `<head><link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
@@ -219,7 +222,6 @@ export class BugFormComponent implements OnInit {
     this.attachmentURLS!.forEach(val => {
       attBody.push(
         {
-
           "op": "add",
           "path": "/relations/-",
           "value": {

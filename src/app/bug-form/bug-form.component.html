@@ -15,7 +15,7 @@
                                 class=" flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
                                 placeholder="John Doe" />
                         </div>
-                        <p [ngClass]="{'text-red-600' : !onUpdateName()}"  class="mt-2 text-sm text-gray-500">
+                        <p [ngClass]="{'text-red-600' : !onUpdateName()}" class="mt-2 text-sm text-gray-500">
                             {{nameAssistance}}
                         </p>
                     </div>
@@ -58,18 +58,18 @@
                             Severity
                         </label>
                         <div class="mt-1 flex rounded-md text-gray-700">
-                            <select class="w-full border-2 rounded-md border-gray-300" (change)="onChangeSeverity($event)">
+                            <select class="w-full border-2 rounded-md border-gray-300"
+                                (change)="onChangeSeverity($event)">
                                 <option>1 - Critical</option>
                                 <option>2 - High</option>
                                 <option selected>3 - Medium</option>
-                                <option>4 - Low</option>    
+                                <option>4 - Low</option>
                             </select>
                         </div>
                         <p class="mt-2 text-sm text-gray-500">
                             {{ severityAssistance }}
                         </p>
                     </div>
-
                     <div class="col-span-3 sm:col-span-2">
                         <label for="company-website" class="block text-sm font-medium text-gray-700">
                             URL
@@ -108,8 +108,7 @@
                         Description
                     </label>
                     <div class="mt-1 flex rounded-md">
-                        <textarea [(ngModel)]="description" 
-                        id="about" name="about" rows="3"
+                        <textarea [(ngModel)]="description" id="about" name="about" rows="3"
                             class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
                             placeholder=""></textarea>
                     </div>
@@ -119,7 +118,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">
-                        Attachments
+                        Attachments     
                     </label>
                     <div
                         class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
@@ -127,21 +126,10 @@
                             <div class="flex text-sm text-gray-600">
                                 <label for="file-upload"
                                     class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                    <span>Upload a file</span>
-                                    <input (change)="onFileSelected($event)" #inputFiles id="file-upload" name="file-upload"
+                                    <span>Upload a file</span></label>
+                                <input (change)="onFileSelected($event)" #inputFiles id="file-upload" name="file-upload"
+                                    style="display:none;" type="file" />
 
-                            <label for="file-upload"
-                                    class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                    Upload multiple files
-                                    </label>
-                            <div class="flex text-sm text-gray-600">
-                                <label for="file-upload"
-                                    class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                    <input  id="file-upload" name="file-upload"
-
-                                        type="file" class="" multiple>
-                                </label>
-                           
                             </div>
                             <p class="text-xs text-gray-500">
                                 PNG, JPG, GIF up to 10MB
@@ -160,3 +148,25 @@
         </div>
     </form>
 </div>
+<!-- <div
+    class="flex flex-col space-y-4 min-w-screen h-screen animated fadeIn faster  fixed  left-0 top-0 flex justify-center items-center inset-0 z-50 outline-none focus:outline-none bg-gray-900">
+    <div class="flex flex-col p-8 bg-white shadow-md hover:shodow-lg rounded-2xl">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="w-16 h-16 rounded-2xl p-3 border border-blue-100 text-blue-400 bg-blue-50" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div class="flex flex-col ml-3">
+                    <div class="font-medium leading-none">Bug Report Submitted | X</div>
+                    <p class="text-sm text-gray-600 leading-none mt-1">We have created a bug report. Ref to the ticket number X.
+                    </p>
+                </div>
+            </div>
+            <button
+                class="flex-no-shrink bg-purple-500 px-5 ml-4 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 text-white rounded-full">Continue</button>
+        </div>
+    </div>
+</div> -->

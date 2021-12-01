@@ -1,10 +1,10 @@
 <div class="min-w-full font-customSans subpixel-antialiased">
-    <div class="grid grid-cols-3 grid-flow-col gap-6">
-        <div class="col-span-1">
+    <div class="grid grid-cols-3 grid-flow-col gap-3">
+        <div class="col-span-1 sm:hidden">
             <!-- User make the selection in the app-selection-panel -->
             <app-selection-panel (typeChange)="onSelectionChange($event)"></app-selection-panel>
         </div>
-        <div class="col-span-2">
+        <div class="col-span-2 sm:col-span-3">
             <!-- Based on user's selection, we show the relevant form -->
             <div *ngIf="selection === 'Bug'; else elseBlock">
                 <app-bug-form></app-bug-form>

@@ -20,7 +20,7 @@ export class SelectionPanelComponent implements OnInit {
       this.titleAssistance = "Have a bug? Submit it here."
     }
     else{
-      this.selectionTitle = 'Submit a future enhancement';
+      this.selectionTitle = 'Submit a Future Enhancement';
       this.selectionAssistance = 'Found a bug? Report it here, choose the relevant option';
       this.titleAssistance = 'Want to add a future enhancement? Submit it here.';
     }
