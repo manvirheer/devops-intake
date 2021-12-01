@@ -1,0 +1,26 @@
+<div class="col-span-1 m-4 w-full">
+    <div class=" px-4 p-2 sm:px-0">
+        <h3 class="text-5xl font-medium leading-9 font-customBarlow text-gray-900 tracking-wide">{{selectionTitle}}</h3>
+        <p class="pt-3 text-sm text-gray-600 ">
+            {{titleAssistance}}
+        </p>
+        <p class="mt-8 text-md leading-6 text-gray-600">
+            In the description, mention the URLs, role of the user facing this issue, detailed description,
+            mention other users if need to. Add images, gifs, video of the problem in the attachment section
+            rather than making them in-line. Let the reader know if the person can be contacted again for
+            follow-up or more information. Mention about the priority and severity. Make sure that there is
+            a single email for a single bug, if there are multiple bugs to report then send a single email
+            for each one of them.
+        </p>
+        <p class="pt-3 text-md font-customRoboto border-t-2 mt-6 text-blue-800">
+            {{selectionAssistance}}
+        </p>
+        <select class="mt-4 rounded-md border-gray-400" (change)="onChangeType($event)">
+            <option class="focus:bg-purple-600 hover:bg-purple-400">Future Enhancement</option>
+            <option class="focus:bg-indigo-600" selected>Bug</option>
+        </select>
+        <p class="pt-3 text-sm text-gray-600 ">
+            Changing this will erase the values in the form.
+        </p>
+    </div>
+</div>
