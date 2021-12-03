@@ -16,7 +16,10 @@ export class CommentsDisplayPanelComponent implements OnInit {
   @ViewChild('commentsRef') commentsRef!: ElementRef;
   @ViewChild('enterRef') enterRef!: ElementRef;
   @ViewChild('commentBox') commentBox!: ElementRef;
+
+
   list = document.querySelector('#list');
+  
   ngOnChanges(changes) {
     if (this.listRef) {
       //this.list.innerHTML = ''
@@ -84,10 +87,14 @@ export class CommentsDisplayPanelComponent implements OnInit {
   }
 
   addComment() {
+
+    //When someone is adding comment to a work item then it means that there is going to be atleast one comment.
     Array.from(this.listRef.nativeElement.children).forEach(child => {
       if ((child as HTMLElement).textContent == 'Unable to found any previous comments')
         this.renderer.removeChild(this.listRef.nativeElement, child);
     });
+
+    //API call for adding the comment
     this.http.post<any>(`https://dev.azure.com/saasberry/SaaSberry%20Innovation%20Lab/_apis/wit/workItems/${(this.workItemNumber)}/comments?api-version=6.0-preview.3`,
       {
         "text": this.commentsRef.nativeElement.value
@@ -120,10 +127,11 @@ export class CommentsDisplayPanelComponent implements OnInit {
         outerDiv.appendChild(innerDivContent);
         this.renderer.appendChild(this.listRef.nativeElement, outerDiv)
         console.log(res);
+        //Empty the comment input field for accepting more entries from the user
         this.commentsRef.nativeElement.value = ""
       })
-
   }
+
   ngOnInit(): void {
   }
 

@@ -53,6 +53,33 @@
                             {{ emailAssistance }}
                         </p>
                     </div>
+                    <div class="col-span-2 w-2/3 sm:col-span-4 sm:w-full">
+                        <label for="tags" class="block text-sm font-medium text-gray-700">
+                            Tags
+                        </label>
+                        <div class="mt-1 flex rounded-md">
+                            <input type="text" (keyup.enter) = "addNewTag($event)" name="tags" id="tags"
+                                class="flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
+                                placeholder="" [(ngModel)]="tag"/>
+                        </div>
+                        <p [ngClass]="{'text-red-600' : !onUpdateName()}" class="mt-2 text-sm text-gray-500">
+                            Add relevant tags using enter
+                        </p>
+                        <!-- Tag -->
+                        <div #tagList>
+                            <div class="bg-blue-100 inline-flex items-center text-sm rounded mt-2 mr-1 overflow-hidden">
+                                <span class="ml-2 mr-1 leading-relaxed truncate max-w-xs px-1" x-text="tag">hehe</span>
+                                <button
+                                    class="w-6 h-8 inline-block align-middle text-gray-500 bg-blue-200 focus:outline-none">
+                                    <svg class="w-6 h-6 fill-current mx-auto" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd"
+                                            d="M15.78 14.36a1 1 0 0 1-1.42 1.42l-2.82-2.83-2.83 2.83a1 1 0 1 1-1.42-1.42l2.83-2.82L7.3 8.7a1 1 0 0 1 1.42-1.42l2.83 2.83 2.82-2.83a1 1 0 0 1 1.42 1.42l-2.83 2.83 2.83 2.82z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-span-2 sm:col-span-4 w-2/3 sm:w-full">
                         <label for="about" class="block text-sm font-medium text-gray-700">
                             Severity
@@ -118,7 +145,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">
-                        Attachments     
+                        Attachments
                     </label>
                     <div
                         class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 
@@ -19,7 +19,11 @@ export class BugFormComponent implements OnInit {
   title: string = "";
   severity: string = "";
   description: string = "";
-  tags = [];
+  tags = new Array<string>();
+  tag: string = "";
+
+  @ViewChild('inputFiles', { static: true }) inputFilesEle!: ElementRef;
+  @ViewChild('tagList', { static: true }) tagList!: ElementRef;
 
   //form assistance text
   urlAssistance: string = "Mention the url of the page where you are facing the issues.";
@@ -32,14 +36,13 @@ export class BugFormComponent implements OnInit {
   //1 - Critical | 2 - High | 3 - Medium | 4 - Low
   attachmentURLS = new Array<string>();
   src: string = ""
-  @ViewChild('inputFiles', { static: true }) inputFilesEle!: ElementRef;
 
   //regex patterns used to match
   urlPattern = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
   emailPattern = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
   numberPresencePattern = /\d/;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private renderer: Renderer2) { }
 
   //form validation methods
   onUpdateName(): boolean {
@@ -86,7 +89,22 @@ export class BugFormComponent implements OnInit {
       return true;
     }
   }
+  addNewTag($event: Event) {
+    this.tags.push(this.tag);
+    this.tag = "";
+    this.createNewTag();
+  }
 
+  createNewTag() {
+    Array.from(this.tagList.nativeElement.children).forEach(child => {
+        this.renderer.removeChild(this.tagList.nativeElement, child);
+    });
+    // let div = ;
+    // let button = ;
+    // let span = ;
+    // let svg = ;
+    // let path = ;
+  }
   onUpdateEmail(): boolean {
     if (this.email.length > 0) {
       if (this.emailPattern.test(this.email)) {
@@ -137,8 +155,6 @@ export class BugFormComponent implements OnInit {
     }
     console.log(self.attachmentURLS)
   }
-
-
 
   onChangeSeverity(event: Event) {
     this.severity = (<HTMLInputElement>event.target).value;
