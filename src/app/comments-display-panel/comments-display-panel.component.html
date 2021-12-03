@@ -3,10 +3,10 @@
         <div class='w-full grid grid-cols-1  gap-6' id="list" #listRef>
 
         </div>
-        <div class="bg-white  mt-2 rounded-lg p-3 border-2 min-w-full">
-            Enter a new comment: {{workItemNumber}}
+        <div class="bg-white  mt-2 rounded-lg p-3 border-2 min-w-full" style="display: none;" #commentBox >
+            Enter a new comment: 
             <input type="text" class="border-2 border-sky-300 rounded-lg" #commentsRef />
-            <button class="px-2 bg-gray-500 text-white rounded-xl m-3 text-base" >SUBMIT</button>
+            <button class="px-2 bg-gray-500 text-white rounded-xl m-3 text-base" (click)="addComment()">SUBMIT</button>
         </div>
     </div>
 </div>
