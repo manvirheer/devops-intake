@@ -91,19 +91,46 @@ export class BugFormComponent implements OnInit {
   }
   addNewTag($event: Event) {
     this.tags.push(this.tag);
-    this.tag = "";
     this.createNewTag();
+    this.tag = "";
+    console.log(this.tags)
+ 
+
   }
 
   createNewTag() {
     Array.from(this.tagList.nativeElement.children).forEach(child => {
-        this.renderer.removeChild(this.tagList.nativeElement, child);
+      this.renderer.removeChild(this.tagList.nativeElement, child);
     });
-    // let div = ;
-    // let button = ;
-    // let span = ;
-    // let svg = ;
-    // let path = ;
+    this.tags.forEach(tag => {
+      let div = this.renderer.createElement("div");
+      div.className = "bg-blue-100 inline-flex items-center text-sm rounded mt-2 mr-1 overflow-hidden";
+      let button = this.renderer.createElement("button");
+      button.className = "w-6 h-8 inline-block align-middle text-gray-500 bg-blue-200 focus:outline-none";
+      let span = this.renderer.createElement("span");
+      span.className = "ml-2 mr-1 leading-relaxed truncate max-w-xs px-1";
+      let divInner = this.renderer.createElement("svg");
+      divInner.className = "w-4 h-4 fill-current mx-auto";
+      let img = this.renderer.createElement("img");
+      this.renderer.listen(img, 'click', (evt) => {
+        console.log(evt.target.parentNode.parentNode.parentNode.firstChild.textContent);
+        this.tags.forEach((tagInner, i, obj) => {
+          debugger
+          if (tagInner == evt.target.parentNode.parentNode.parentNode.firstChild.textContent)
+          obj.splice(i, 1);
+        })
+       evt.target.parentNode.parentNode.parentNode.parentNode.removeChild(evt.target.parentNode.parentNode.parentNode);
+      })
+      this.renderer.setAttribute(img, "src", "https://cdn-icons.flaticon.com/png/512/2961/premium/2961937.png?token=exp=1638677032~hmac=9f6a87ae870a6f5b8b324853575c3a17");
+      span.textContent = tag;
+      divInner.appendChild(img);
+      button.appendChild(divInner);
+      div.appendChild(span);
+      div.appendChild(button);
+      this.renderer.appendChild(this.tagList.nativeElement, div);
+  
+    })
+
   }
   onUpdateEmail(): boolean {
     if (this.email.length > 0) {
@@ -134,8 +161,8 @@ export class BugFormComponent implements OnInit {
     if (files!.length > 0) {
       files!.forEach(file => {
         console.log(file)
-        var fileNameExt  = "hehe";
-        
+        var fileNameExt = "hehe";
+
         fileNameExt = file?.name?.match(/\.[0-9a-z]+$/i)[0]
         var reader = new FileReader();
         reader.onloadend = function () {
@@ -147,8 +174,10 @@ export class BugFormComponent implements OnInit {
                 "Authorization": "Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=",
                 'Content-Type': 'application/octet-stream',
               }
-            }).subscribe((res) => {self.attachmentURLS.push(res.url);
-            self.disabled = false; debugger});
+            }).subscribe((res) => {
+              self.attachmentURLS.push(res.url);
+              self.disabled = false; debugger
+            });
         }
         reader.readAsDataURL(file);
       })
@@ -210,8 +239,8 @@ export class BugFormComponent implements OnInit {
   }
 
   handleSubmit() {
-console.log("Submit action taken.")
-debugger; 
+    console.log("Submit action taken.")
+    debugger;
     const finalDesc = `<head><link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
@@ -234,7 +263,7 @@ debugger;
       'Authorization': `Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=`,
       'Content-Type': 'application/json-patch+json',
     };
-    const attBody :Array<any> = [];
+    const attBody: Array<any> = [];
     this.attachmentURLS!.forEach(val => {
       attBody.push(
         {
