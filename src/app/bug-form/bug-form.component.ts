@@ -150,8 +150,6 @@ export class BugFormComponent implements OnInit {
   }
   fileName = '';
 
-
-
   onFileSelected(event: Event) {
     var self = this;
 
@@ -277,41 +275,47 @@ export class BugFormComponent implements OnInit {
             }
           }
         }
-      )
-    })
-    const body = [
+      );
+    });
+
+    //Request Payload
+    const body = [];
+    body.push(
       {
         "op": "add",
         "path": "/fields/System.Title",
         "value": `Bug - ${this.title}`
-      },
+      });
+      body.push(
       {
         'op': 'add',
         'path': '/fields/System.Description',
         'from': null,
         'data-type': 'HTML',
         'value': finalDesc
-      },
+      });
+      body.push(
       {
         'op': 'add',
         'path': '/fields/System.History',
         'from': null,
         'value': 'Test Comment'
-      },
-      {
+      });
+      body.push({
         'op': 'add',
         'path': '/fields/Microsoft.VSTS.Common.Severity',
         'from': null,
         'value': `${this.severity}`
-      },
+      });
+      body.push(
       {
-        'op': 'add',
-        'path': '/fields/System.Tags',
-        'from': null,
-        'value': `Intake, Traige`
-      },
-      ...attBody
-    ];
+          "op": "add",
+          "path": "/fields/System.Tags",
+          "value": this.tags.join(";"),      
+      });
+      body.push(
+      ...attBody);
+    ;
 
     const request2 = this.http.post<any>(`https://dev.azure.com/${organization}/${project}/_apis/wit/workitems/$Bug?api-version=6.0`, body, { headers }).subscribe(val => {
       console.log(val);
