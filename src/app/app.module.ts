@@ -17,6 +17,13 @@ import { HomeComponent } from './home/home.component';
 import { CommentsSearchPanelComponent } from './comments-search-panel/comments-search-panel.component';
 import { CommentsDisplayPanelComponent } from './comments-display-panel/comments-display-panel.component';
 
+//import filepond module
+import { FilePondModule, registerPlugin } from 'ngx-filepond';
+
+// // import and register filepond file type validation plugin
+// import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
+// registerPlugin(FilePondPluginFileValidateType);
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -43,6 +50,7 @@ import { CommentsDisplayPanelComponent } from './comments-display-panel/comments
     ]),
     FormsModule,
     HttpClientModule,
+    FilePondModule
   
   ],
   providers: [],

@@ -21,10 +21,59 @@ export class BugFormComponent implements OnInit {
   description: string = "";
   tags = new Array<string>();
   tag: string = "";
+  fileByteArray = [];
+
+
 
   @ViewChild('inputFiles', { static: true }) inputFilesEle!: ElementRef;
   @ViewChild('tagList', { static: true }) tagList!: ElementRef;
+  @ViewChild('myPond') myPond: any;
+  pondOptions = {
+    class: 'my-filepond',
+    multiple: true,
+    labelIdle: 'Drop files here',
+  };
 
+  pondFiles = [];
+
+  pondHandleInit() {
+  }
+   processFile(theFile){
+    return function(e) { 
+      
+      var theBytes = e.target.result.split('base64,')[1]; // use with uploadFile2; 
+      console.log(theBytes);
+  
+      this.fileByteArray = [];
+      this.fileByteArray.push(theBytes);
+      
+    }
+  }
+  pondHandleAddFile(event: any) {
+    this.disabled = false; var self = this;
+    this.myPond.getFiles().forEach(file => {
+      const formData = new FormData();
+     
+      var files = file.file;
+      console.log(files)
+      var reader = new FileReader();
+      reader.onload = this.processFile(files);
+      reader.readAsArrayBuffer(files); 
+      console.log(this.fileByteArray);
+      // formData.append('body', this.fileByteArray); 
+      const upload$ = self.http.post<any>(`https://dev.azure.com/saasberry/SaaSberry%20Innovation%20Lab/_apis/wit/attachments?api-version=6.0&fileName=${file.file.name}`, this.fileByteArray,
+        {
+          headers: {
+            "Authorization": "Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=",
+            'Content-Type': 'application/octet-stream',
+          }
+        }).subscribe((res) => {
+           console.log(res)
+          self.attachmentURLS.push(res.url);
+          self.disabled = false; 
+        });
+    })
+  }
   //form assistance text
   urlAssistance: string = "Mention the url of the page where you are facing the issues.";
   nameAssistance: string = "Mention your name here.";
@@ -94,8 +143,36 @@ export class BugFormComponent implements OnInit {
     this.createNewTag();
     this.tag = "";
     console.log(this.tags)
- 
 
+
+  }
+ 
+  createAttachmentURLS() {
+    var self = this;
+    debugger
+    this.myPond.getFiles().forEach(file => {
+      const formData = new FormData();
+      formData.append('body', file.file);
+      var files = file.file;
+      var reader = new FileReader();
+      reader.onload = this.processFile(files);
+      reader.readAsArrayBuffer(files); 
+      console.log(this.fileByteArray);
+      
+      const upload$ = self.http.post<any>(`https://dev.azure.com/saasberry/SaaSberry%20Innovation%20Lab/_apis/wit/attachments?api-version=6.0&fileName=${file.file.name}`, formData,
+        {
+            headers: {
+                "Authorization": "Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=",
+                'Content-Type': 'application/octet-stream',
+              }
+            }).subscribe((res) => {
+                
+                self.attachmentURLS.push(res.url);
+                self.disabled = false; 
+              });
+          })
+       
+          
   }
 
   createNewTag() {
@@ -117,9 +194,9 @@ export class BugFormComponent implements OnInit {
         this.tags.forEach((tagInner, i, obj) => {
           debugger
           if (tagInner == evt.target.parentNode.parentNode.parentNode.firstChild.textContent)
-          obj.splice(i, 1);
+            obj.splice(i, 1);
         })
-       evt.target.parentNode.parentNode.parentNode.parentNode.removeChild(evt.target.parentNode.parentNode.parentNode);
+        evt.target.parentNode.parentNode.parentNode.parentNode.removeChild(evt.target.parentNode.parentNode.parentNode);
       })
       this.renderer.setAttribute(img, "src", "https://cdn-icons.flaticon.com/png/512/2961/premium/2961937.png?token=exp=1638677032~hmac=9f6a87ae870a6f5b8b324853575c3a17");
       span.textContent = tag;
@@ -128,7 +205,7 @@ export class BugFormComponent implements OnInit {
       div.appendChild(span);
       div.appendChild(button);
       this.renderer.appendChild(this.tagList.nativeElement, div);
-  
+
     })
 
   }
@@ -159,7 +236,7 @@ export class BugFormComponent implements OnInit {
     if (files!.length > 0) {
       files!.forEach(file => {
         console.log(file)
-        var fileNameExt = "hehe";
+        var fileNameExt;
 
         fileNameExt = file?.name?.match(/\.[0-9a-z]+$/i)[0]
         var reader = new FileReader();
@@ -237,8 +314,9 @@ export class BugFormComponent implements OnInit {
   }
 
   handleSubmit() {
+    
     console.log("Submit action taken.")
-    debugger;
+    
     const finalDesc = `<head><link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
@@ -262,6 +340,7 @@ export class BugFormComponent implements OnInit {
       'Content-Type': 'application/json-patch+json',
     };
     const attBody: Array<any> = [];
+    debugger;
     this.attachmentURLS!.forEach(val => {
       attBody.push(
         {
@@ -286,7 +365,7 @@ export class BugFormComponent implements OnInit {
         "path": "/fields/System.Title",
         "value": `Bug - ${this.title}`
       });
-      body.push(
+    body.push(
       {
         'op': 'add',
         'path': '/fields/System.Description',
@@ -294,26 +373,26 @@ export class BugFormComponent implements OnInit {
         'data-type': 'HTML',
         'value': finalDesc
       });
-      body.push(
+    body.push(
       {
         'op': 'add',
         'path': '/fields/System.History',
         'from': null,
         'value': 'Test Comment'
       });
-      body.push({
-        'op': 'add',
-        'path': '/fields/Microsoft.VSTS.Common.Severity',
-        'from': null,
-        'value': `${this.severity}`
-      });
-      body.push(
+    body.push({
+      'op': 'add',
+      'path': '/fields/Microsoft.VSTS.Common.Severity',
+      'from': null,
+      'value': `${this.severity}`
+    });
+    body.push(
       {
-          "op": "add",
-          "path": "/fields/System.Tags",
-          "value": this.tags.join(";"),      
+        "op": "add",
+        "path": "/fields/System.Tags",
+        "value": this.tags.join(";"),
       });
-      body.push(
+    body.push(
       ...attBody);
     ;
 
