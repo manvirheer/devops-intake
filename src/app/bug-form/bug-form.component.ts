@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-bug-form',
@@ -38,40 +37,30 @@ export class BugFormComponent implements OnInit {
 
   pondHandleInit() {
   }
-   processFile(theFile){
-    return function(e) { 
-      
-      var theBytes = e.target.result.split('base64,')[1]; // use with uploadFile2; 
-      console.log(theBytes);
+
+
+
   
-      this.fileByteArray = [];
-      this.fileByteArray.push(theBytes);
-      
-    }
-  }
   pondHandleAddFile(event: any) {
     this.disabled = false; var self = this;
     this.myPond.getFiles().forEach(file => {
       const formData = new FormData();
-     
       var files = file.file;
-      console.log(files)
       var reader = new FileReader();
-      reader.onload = this.processFile(files);
-      reader.readAsArrayBuffer(files); 
-      console.log(this.fileByteArray);
-      // formData.append('body', this.fileByteArray); 
-      const upload$ = self.http.post<any>(`https://dev.azure.com/saasberry/SaaSberry%20Innovation%20Lab/_apis/wit/attachments?api-version=6.0&fileName=${file.file.name}`, this.fileByteArray,
-        {
-          headers: {
-            "Authorization": "Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=",
-            'Content-Type': 'application/octet-stream',
-          }
-        }).subscribe((res) => {
-           console.log(res)
-          self.attachmentURLS.push(res.url);
-          self.disabled = false; 
-        });
+      reader.readAsBinaryString(files);
+      reader.onload = function () {
+        const upload$ = self.http.post<any>(`https://dev.azure.com/saasberry/_apis/wit/attachments?api-version=6.0&fileName=${file.file.name}`, { 'body': (<String>reader.result) },
+          {
+            headers: {
+              "Authorization": "Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=",
+              'Content-Type': 'application/octet-stream',
+            }
+          }).subscribe((res) => {
+            console.log(res)
+            self.attachmentURLS.push(res.url);
+            self.disabled = false;
+          });
+      }
     })
   }
   //form assistance text
@@ -146,34 +135,7 @@ export class BugFormComponent implements OnInit {
 
 
   }
- 
-  createAttachmentURLS() {
-    var self = this;
-    debugger
-    this.myPond.getFiles().forEach(file => {
-      const formData = new FormData();
-      formData.append('body', file.file);
-      var files = file.file;
-      var reader = new FileReader();
-      reader.onload = this.processFile(files);
-      reader.readAsArrayBuffer(files); 
-      console.log(this.fileByteArray);
-      
-      const upload$ = self.http.post<any>(`https://dev.azure.com/saasberry/SaaSberry%20Innovation%20Lab/_apis/wit/attachments?api-version=6.0&fileName=${file.file.name}`, formData,
-        {
-            headers: {
-                "Authorization": "Basic OjJuc2VwM2V1b211cWVxYWJqcW1rdnVuMmtqbGc1ZHByMzduMnZ1NTRpcGV4M2UycDRuaXE=",
-                'Content-Type': 'application/octet-stream',
-              }
-            }).subscribe((res) => {
-                
-                self.attachmentURLS.push(res.url);
-                self.disabled = false; 
-              });
-          })
-       
-          
-  }
+
 
   createNewTag() {
     Array.from(this.tagList.nativeElement.children).forEach(child => {
@@ -192,7 +154,7 @@ export class BugFormComponent implements OnInit {
       this.renderer.listen(img, 'click', (evt) => {
         console.log(evt.target.parentNode.parentNode.parentNode.firstChild.textContent);
         this.tags.forEach((tagInner, i, obj) => {
-          debugger
+
           if (tagInner == evt.target.parentNode.parentNode.parentNode.firstChild.textContent)
             obj.splice(i, 1);
         })
@@ -251,7 +213,7 @@ export class BugFormComponent implements OnInit {
               }
             }).subscribe((res) => {
               self.attachmentURLS.push(res.url);
-              self.disabled = false; debugger
+              self.disabled = false;
             });
         }
         reader.readAsDataURL(file);
@@ -314,9 +276,9 @@ export class BugFormComponent implements OnInit {
   }
 
   handleSubmit() {
-    
+
     console.log("Submit action taken.")
-    
+
     const finalDesc = `<head><link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
@@ -340,7 +302,7 @@ export class BugFormComponent implements OnInit {
       'Content-Type': 'application/json-patch+json',
     };
     const attBody: Array<any> = [];
-    debugger;
+
     this.attachmentURLS!.forEach(val => {
       attBody.push(
         {
